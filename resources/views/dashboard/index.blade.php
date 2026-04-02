@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="row g-4 mb-4">
-    <!-- Stats Cards -->
     <div class="col-md-6 col-lg-3">
         <div class="stat-card">
             <div class="stat-header">
@@ -31,7 +30,7 @@
                 @if($stats['licencias_por_vencer'] > 0)
                     <span class="text-warning fw-bold">{{ $stats['licencias_por_vencer'] }} por vencer</span>
                 @else
-                    Todas al día
+                    Todas al dia
                 @endif
             </div>
         </div>
@@ -53,7 +52,7 @@
     <div class="col-md-6 col-lg-3">
         <div class="stat-card warning">
             <div class="stat-header">
-                <span class="stat-title">Ingresos del Año</span>
+                <span class="stat-title">Ingresos del Ano</span>
                 <div class="stat-icon warning">
                     <i class="bi bi-cart"></i>
                 </div>
@@ -65,7 +64,6 @@
 </div>
 
 <div class="row g-4 mb-4">
-    <!-- Ingresos Mensuales -->
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
@@ -75,22 +73,31 @@
                 </h5>
             </div>
             <div class="card-body">
-                <canvas id="ingresosChart" height="280"></canvas>
+                <canvas
+                    id="ingresosChart"
+                    height="280"
+                    data-labels='@json(array_column($ingresosPorMes, "mes"))'
+                    data-values='@json(array_column($ingresosPorMes, "monto"))'
+                ></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Distribución de Licencias -->
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">
                     <i class="bi bi-pie-chart text-success me-2"></i>
-                    Distribución de Licencias
+                    Distribucion de Licencias
                 </h5>
             </div>
             <div class="card-body">
-                <canvas id="licenciasChart" height="200"></canvas>
+                <canvas
+                    id="licenciasChart"
+                    height="200"
+                    data-labels='@json(array_column($licenciasPorTipo, "name"))'
+                    data-values='@json(array_column($licenciasPorTipo, "value"))'
+                ></canvas>
                 <div class="row mt-4 text-center">
                     <div class="col-6">
                         <h4 class="text-primary mb-0">{{ $stats['compras_totales'] }}</h4>
@@ -107,22 +114,25 @@
 </div>
 
 <div class="row g-4">
-    <!-- Productos Más Vendidos -->
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">
                     <i class="bi bi-box text-primary me-2"></i>
-                    Productos Más Vendidos
+                    Productos Mas Vendidos
                 </h5>
             </div>
             <div class="card-body">
-                <canvas id="productosChart" height="200"></canvas>
+                <canvas
+                    id="productosChart"
+                    height="200"
+                    data-labels='@json($productosMasVendidos->pluck("nombre")->toArray())'
+                    data-values='@json($productosMasVendidos->pluck("licencias_count")->toArray())'
+                ></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Top Clientes -->
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
@@ -160,7 +170,6 @@
 </div>
 
 <div class="row g-4 mt-2">
-    <!-- Licencias Recientes -->
     <div class="col-lg-6">
         <div class="card">
             <div class="card-header">
@@ -190,7 +199,6 @@
         </div>
     </div>
 
-    <!-- Transacciones Recientes -->
     <div class="col-lg-6">
         <div class="card">
             <div class="card-header">
@@ -221,89 +229,3 @@
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    // Ingresos Mensuales
-    const ingresosCtx = document.getElementById('ingresosChart').getContext('2d');
-    new Chart(ingresosCtx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode(array_column($ingresosPorMes, 'mes')) !!},
-            datasets: [{
-                label: 'Ingresos',
-                data: {!! json_encode(array_column($ingresosPorMes, 'monto')) !!},
-                backgroundColor: '#3b82f6',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value + 'M';
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Distribución de Licencias
-    const licenciasCtx = document.getElementById('licenciasChart').getContext('2d');
-    new Chart(licenciasCtx, {
-        type: 'doughnut',
-        data: {
-            labels: {!! json_encode(array_column($licenciasPorTipo, 'name')) !!},
-            datasets: [{
-                data: {!! json_encode(array_column($licenciasPorTipo, 'value')) !!},
-                backgroundColor: ['#3b82f6', '#10b981']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-
-    // Productos Más Vendidos
-    const productosCtx = document.getElementById('productosChart').getContext('2d');
-    new Chart(productosCtx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($productosMasVendidos->pluck('nombre')->toArray()) !!},
-            datasets: [{
-                label: 'Licencias vendidas',
-                data: {!! json_encode($productosMasVendidos->pluck('licencias_count')->toArray()) !!},
-                backgroundColor: '#8b5cf6',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-</script>
-@endpush

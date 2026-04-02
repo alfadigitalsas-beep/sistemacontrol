@@ -1,0 +1,8 @@
+.page-productos-index .producto-icon {
+    font-size: 2rem;
+}
+
+.page-productos-index .producto-descripcion {
+    min-height: 3em;
+    overflow: hidden;
+}

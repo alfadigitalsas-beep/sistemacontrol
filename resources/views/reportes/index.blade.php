@@ -6,11 +6,11 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="mb-1">Reportes Financieros</h4>
-        <p class="text-muted mb-0">Análisis detallado de ingresos y transacciones</p>
+        <p class="text-muted mb-0">Analisis detallado de ingresos y transacciones</p>
     </div>
     <div class="d-flex gap-2">
         <form action="{{ route('reportes.index') }}" method="GET" class="d-flex gap-2">
-            <select name="anio" class="form-select" style="width: auto;">
+            <select name="anio" class="form-select reportes-year-select">
                 @foreach($aniosDisponibles as $anio)
                     <option value="{{ $anio }}" {{ $anioSeleccionado == $anio ? 'selected' : '' }}>{{ $anio }}</option>
                 @endforeach
@@ -25,7 +25,6 @@
     </div>
 </div>
 
-<!-- Stats Cards -->
 <div class="row g-4 mb-4">
     <div class="col-md-6 col-lg-3">
         <div class="stat-card">
@@ -67,21 +66,20 @@
     </div>
 
     <div class="col-md-6 col-lg-3">
-        <div class="stat-card" style="border-left-color: #8b5cf6;">
+        <div class="stat-card stat-card-accent">
             <div class="stat-header">
                 <span class="stat-title">Promedio</span>
-                <div class="stat-icon" style="background: #ede9fe; color: #8b5cf6;">
+                <div class="stat-icon stat-icon-accent">
                     <i class="bi bi-bar-chart"></i>
                 </div>
             </div>
             <div class="stat-value">${{ number_format($stats['promedio_transaccion'], 0, ',', '.') }}</div>
-            <div class="stat-label">Por transacción</div>
+            <div class="stat-label">Por transaccion</div>
         </div>
     </div>
 </div>
 
 <div class="row g-4 mb-4">
-    <!-- Ingresos Mensuales -->
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
@@ -91,29 +89,37 @@
                 </h5>
             </div>
             <div class="card-body">
-                <canvas id="ingresosMensualesChart" height="280"></canvas>
+                <canvas
+                    id="ingresosMensualesChart"
+                    height="280"
+                    data-labels='@json(array_column($ingresosPorMes, "mes"))'
+                    data-values='@json(array_column($ingresosPorMes, "monto"))'
+                ></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Distribución por Tipo -->
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">
                     <i class="bi bi-pie-chart text-success me-2"></i>
-                    Distribución por Tipo
+                    Distribucion por Tipo
                 </h5>
             </div>
             <div class="card-body">
-                <canvas id="distribucionChart" height="200"></canvas>
+                <canvas
+                    id="distribucionChart"
+                    height="200"
+                    data-labels='@json(array_column($ingresosPorTipo, "name"))'
+                    data-values='@json(array_column($ingresosPorTipo, "value"))'
+                ></canvas>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row g-4 mb-4">
-    <!-- Top Clientes -->
     <div class="col-lg-6">
         <div class="card">
             <div class="card-header">
@@ -123,12 +129,16 @@
                 </h5>
             </div>
             <div class="card-body">
-                <canvas id="topClientesChart" height="250"></canvas>
+                <canvas
+                    id="topClientesChart"
+                    height="250"
+                    data-labels='@json($topClientes->pluck("nombre")->map(fn($n) => explode(" ", $n)[0])->toArray())'
+                    data-values='@json($topClientes->pluck("transacciones_sum_monto")->toArray())'
+                ></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Top Productos -->
     <div class="col-lg-6">
         <div class="card">
             <div class="card-header">
@@ -164,7 +174,6 @@
     </div>
 </div>
 
-<!-- Transacciones Recientes -->
 <div class="card">
     <div class="card-header">
         <h5 class="card-title">
@@ -181,7 +190,7 @@
                         <th>Cliente</th>
                         <th>Tipo</th>
                         <th>Monto</th>
-                        <th>Descripción</th>
+                        <th>Descripcion</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -204,104 +213,3 @@
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    // Ingresos Mensuales
-    const ingresosCtx = document.getElementById('ingresosMensualesChart').getContext('2d');
-    new Chart(ingresosCtx, {
-        type: 'line',
-        data: {
-            labels: {!! json_encode(array_column($ingresosPorMes, 'mes')) !!},
-            datasets: [{
-                label: 'Ingresos',
-                data: {!! json_encode(array_column($ingresosPorMes, 'monto')) !!},
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value + 'M';
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Distribución por Tipo
-    const distribucionCtx = document.getElementById('distribucionChart').getContext('2d');
-    new Chart(distribucionCtx, {
-        type: 'doughnut',
-        data: {
-            labels: {!! json_encode(array_column($ingresosPorTipo, 'name')) !!},
-            datasets: [{
-                data: {!! json_encode(array_column($ingresosPorTipo, 'value')) !!},
-                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.raw;
-                            return '$' + value.toLocaleString('es-CO');
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Top Clientes
-    const topClientesCtx = document.getElementById('topClientesChart').getContext('2d');
-    new Chart(topClientesCtx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($topClientes->pluck('nombre')->map(fn($n) => explode(' ', $n)[0])->toArray()) !!},
-            datasets: [{
-                label: 'Total Gastado',
-                data: {!! json_encode($topClientes->pluck('transacciones_sum_monto')->toArray()) !!},
-                backgroundColor: '#8b5cf6',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + (value / 1000000).toFixed(1) + 'M';
-                        }
-                    }
-                }
-            }
-        }
-    });
-</script>
-@endpush

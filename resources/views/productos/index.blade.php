@@ -5,27 +5,26 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h4 class="mb-1">Gestión de Productos</h4>
-        <p class="text-muted mb-0">Administra el catálogo de software disponible</p>
+        <h4 class="mb-1">Gestion de Productos</h4>
+        <p class="text-muted mb-0">Administra el catalogo de software disponible</p>
     </div>
     <a href="{{ route('productos.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-lg me-2"></i>Nuevo Producto
     </a>
 </div>
 
-<!-- Filtros -->
 <div class="card mb-4">
     <div class="card-body">
         <form action="{{ route('productos.index') }}" method="GET" class="row g-3">
             <div class="col-md-8">
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre, descripción o versión..." value="{{ request('busqueda') }}">
+                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre, descripcion o version..." value="{{ request('busqueda') }}">
                 </div>
             </div>
             <div class="col-md-3">
                 <select name="categoria" class="form-select">
-                    <option value="todas">Todas las categorías</option>
+                    <option value="todas">Todas las categorias</option>
                     @foreach($categorias as $key => $label)
                         <option value="{{ $key }}" {{ request('categoria') == $key ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
@@ -40,7 +39,6 @@
     </div>
 </div>
 
-<!-- Estadísticas por Categoría -->
 <div class="row g-4 mb-4">
     @foreach($categorias as $key => $label)
         <div class="col-6 col-md-4 col-lg-2">
@@ -57,7 +55,6 @@
     @endforeach
 </div>
 
-<!-- Lista de Productos -->
 <div class="row g-4">
     @forelse($productos as $producto)
         <div class="col-md-6 col-lg-4">
@@ -65,7 +62,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="d-flex align-items-center">
-                            <div class="bg-light rounded p-2 me-3" style="font-size: 2rem;">
+                            <div class="bg-light rounded p-2 me-3 producto-icon">
                                 {{ $producto->icono }}
                             </div>
                             <div>
@@ -90,7 +87,7 @@
                                     </form>
                                 </li>
                                 <li>
-                                    <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este producto?')">
+                                    <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="d-inline" data-confirm="Estas seguro de eliminar este producto?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Eliminar</button>
@@ -100,7 +97,7 @@
                         </div>
                     </div>
 
-                    <p class="text-muted mb-3" style="height: 3em; overflow: hidden;">{{ Str::limit($producto->descripcion, 100) }}</p>
+                    <p class="text-muted mb-3 producto-descripcion">{{ Str::limit($producto->descripcion, 100) }}</p>
 
                     <div class="row g-2 mb-3">
                         <div class="col-4 text-center p-2 bg-light rounded">
@@ -140,7 +137,6 @@
     @endforelse
 </div>
 
-<!-- Paginación -->
 <div class="mt-4">
     {{ $productos->links() }}
 </div>

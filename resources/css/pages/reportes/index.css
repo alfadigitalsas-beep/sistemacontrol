@@ -1,0 +1,12 @@
+.page-reportes-index .reportes-year-select {
+    width: auto;
+}
+
+.page-reportes-index .stat-card-accent {
+    border-left-color: #8b5cf6;
+}
+
+.page-reportes-index .stat-icon-accent {
+    background: #ede9fe;
+    color: #8b5cf6;
+}

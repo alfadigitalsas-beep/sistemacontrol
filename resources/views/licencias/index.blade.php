@@ -13,7 +13,6 @@
     </a>
 </div>
 
-<!-- Filtros -->
 <div class="card mb-4">
     <div class="card-body">
         <form action="{{ route('licencias.index') }}" method="GET" class="row g-3">
@@ -48,7 +47,6 @@
     </div>
 </div>
 
-<!-- Estadísticas -->
 <div class="row g-4 mb-4">
     <div class="col-md-3">
         <div class="card">
@@ -104,7 +102,6 @@
     </div>
 </div>
 
-<!-- Lista de Licencias -->
 <div class="row g-4">
     @forelse($licencias as $licencia)
         <div class="col-md-6 col-xl-4">
@@ -137,7 +134,7 @@
                                     </form>
                                 </li>
                                 <li>
-                                    <form action="{{ route('licencias.destroy', $licencia) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta licencia?')">
+                                    <form action="{{ route('licencias.destroy', $licencia) }}" method="POST" class="d-inline" data-confirm="Estas seguro de eliminar esta licencia?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Eliminar</button>
@@ -149,7 +146,7 @@
 
                     <div class="bg-light p-2 rounded mb-3 d-flex justify-content-between align-items-center">
                         <code>{{ $licencia->clave_licencia }}</code>
-                        <button class="btn btn-sm btn-link" onclick="navigator.clipboard.writeText('{{ $licencia->clave_licencia }}')">
+                        <button type="button" class="btn btn-sm btn-link js-copy-trigger" data-copy-text="{{ $licencia->clave_licencia }}">
                             <i class="bi bi-clipboard"></i>
                         </button>
                     </div>
@@ -165,7 +162,7 @@
                                 <span class="{{ $licencia->por_vencer ? 'text-warning fw-bold' : '' }}">
                                     {{ $licencia->fecha_vencimiento->format('d M Y') }}
                                     @if($licencia->dias_restantes !== null)
-                                        <small>({{ $licencia->dias_restantes }} días)</small>
+                                        <small>({{ $licencia->dias_restantes }} dias)</small>
                                     @endif
                                 </span>
                             </div>
@@ -203,7 +200,6 @@
     @endforelse
 </div>
 
-<!-- Paginación -->
 <div class="mt-4">
     {{ $licencias->links() }}
 </div>

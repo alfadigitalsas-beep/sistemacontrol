@@ -5,22 +5,21 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h4 class="mb-1">Gestión de Clientes</h4>
-        <p class="text-muted mb-0">Administra tus clientes y su información de contacto</p>
+        <h4 class="mb-1">Gestion de Clientes</h4>
+        <p class="text-muted mb-0">Administra tus clientes y su informacion de contacto</p>
     </div>
     <a href="{{ route('clientes.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-lg me-2"></i>Nuevo Cliente
     </a>
 </div>
 
-<!-- Filtros -->
 <div class="card mb-4">
     <div class="card-body">
         <form action="{{ route('clientes.index') }}" method="GET" class="row g-3">
             <div class="col-md-8">
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre, email, empresa o teléfono..." value="{{ request('busqueda') }}">
+                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre, email, empresa o telefono..." value="{{ request('busqueda') }}">
                 </div>
             </div>
             <div class="col-md-3">
@@ -40,7 +39,6 @@
     </div>
 </div>
 
-<!-- Estadísticas -->
 <div class="row g-4 mb-4">
     <div class="col-md-4">
         <div class="card">
@@ -83,7 +81,6 @@
     </div>
 </div>
 
-<!-- Lista de Clientes -->
 <div class="row g-4">
     @forelse($clientes as $cliente)
         <div class="col-md-6 col-lg-4 col-xl-3">
@@ -91,7 +88,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="d-flex align-items-center">
-                            <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-weight: 600;">
+                            <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center cliente-avatar">
                                 {{ $cliente->iniciales }}
                             </div>
                             <div class="ms-3">
@@ -106,7 +103,7 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="{{ route('clientes.edit', $cliente) }}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
                                 <li>
-                                    <form action="{{ route('clientes.destroy', $cliente) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este cliente?')">
+                                    <form action="{{ route('clientes.destroy', $cliente) }}" method="POST" class="d-inline" data-confirm="Estas seguro de eliminar este cliente?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Eliminar</button>
@@ -156,7 +153,6 @@
     @endforelse
 </div>
 
-<!-- Paginación -->
 <div class="mt-4">
     {{ $clientes->links() }}
 </div>

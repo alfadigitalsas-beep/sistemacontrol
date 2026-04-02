@@ -42,7 +42,7 @@
 
                         <div class="col-md-6">
                             <label for="tipo" class="form-label">Tipo de Licencia *</label>
-                            <select class="form-select @error('tipo') is-invalid @enderror" id="tipo" name="tipo" required onchange="toggleDuracion()">
+                            <select class="form-select @error('tipo') is-invalid @enderror" id="tipo" name="tipo" required data-license-type-toggle>
                                 @foreach($tipos as $key => $label)
                                     <option value="{{ $key }}" {{ old('tipo') == $key ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
@@ -68,13 +68,13 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6" id="duracion_container">
-                            <label for="duracion" class="form-label">Duración (Alquiler)</label>
+                        <div class="col-md-6" id="duracion_container" data-duration-container>
+                            <label for="duracion" class="form-label">Duracion (Alquiler)</label>
                             <select class="form-select @error('duracion') is-invalid @enderror" id="duracion" name="duracion">
                                 <option value="1">1 mes</option>
                                 <option value="3">3 meses</option>
                                 <option value="6">6 meses</option>
-                                <option value="12">1 año</option>
+                                <option value="12">1 ano</option>
                                 <option value="anual">Anual (precio especial)</option>
                             </select>
                             @error('duracion')
@@ -85,7 +85,7 @@
                         <div class="col-12">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="renovacion_automatica" name="renovacion_automatica" value="1" {{ old('renovacion_automatica') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="renovacion_automatica">Renovación Automática</label>
+                                <label class="form-check-label" for="renovacion_automatica">Renovacion automatica</label>
                             </div>
                         </div>
 
@@ -104,22 +104,4 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-    function toggleDuracion() {
-        const tipo = document.getElementById('tipo').value;
-        const duracionContainer = document.getElementById('duracion_container');
-        
-        if (tipo === 'compra') {
-            duracionContainer.style.display = 'none';
-        } else {
-            duracionContainer.style.display = 'block';
-        }
-    }
-    
-    // Ejecutar al cargar
-    toggleDuracion();
-</script>
-@endpush
 @endsection
