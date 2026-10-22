@@ -26,11 +26,15 @@ class ProductoController extends Controller
             $query->where('categoria', $request->input('categoria'));
         }
 
-        $productos = $query->orderBy('nombre')->paginate(12);
+        $productos = $query->withCount('licencias')->orderBy('nombre')->paginate(12)->withQueryString();
         $categorias = Producto::getCategorias();
         $iconos = Producto::getIconos();
+        $productosPorCategoria = Producto::query()
+            ->selectRaw('categoria, COUNT(*) as total')
+            ->groupBy('categoria')
+            ->pluck('total', 'categoria');
 
-        return view('productos.index', compact('productos', 'categorias', 'iconos'));
+        return view('productos.index', compact('productos', 'categorias', 'iconos', 'productosPorCategoria'));
     }
 
     public function create(): View
